@@ -11,7 +11,7 @@
 
 Precompiled binaries are available in [GitHub Releases](https://github.com/micnncim/kleat-format/releases).
 
-## Via Go
+### Via Go
 
 ```
 $ go get github.com/micnncim/kleat-format/cmd/kleat-format
