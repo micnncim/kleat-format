@@ -55,6 +55,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - if: ${{ failure() }}
+        run: git push --delete origin ${{ steps.bump-semver.outputs.new_version }}
+
       - uses: actions-ecosystem/action-create-comment@v1
         if: ${{ steps.bump-semver.outputs.new_version != null }}
         with:

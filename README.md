@@ -25,9 +25,10 @@ Usage:
   kleat-format PATH_TO_HALCONFIG [flags]
 
 Flags:
-      --check   If true, only check whether there is diff between source halconfig and formatted one
-  -h, --help    help for kleat-format
-  -w, --write   If true, write result to source halconfig instead of stdout
+      --check     If true, only check whether there is diff between source halconfig and formatted one
+  -h, --help      help for kleat-format
+      --version   If true, print version information
+  -w, --write     If true, write result to source halconfig instead of stdout
 
 ```
 
