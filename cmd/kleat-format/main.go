@@ -34,7 +34,7 @@ func newCommand() *cobra.Command {
 	opt := &options{}
 
 	cmd := &cobra.Command{
-		Use: "kleat-format PATH_TO_HALCONFIG",
+		Use: "kleat-format /path/to/halconfig",
 		Run: func(cmd *cobra.Command, args []string) {
 			if opt.version {
 				fmt.Printf("%s (%s)\n", version.Version, version.Revision)
