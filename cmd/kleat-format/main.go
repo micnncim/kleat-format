@@ -10,6 +10,8 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 	"sigs.k8s.io/yaml"
+
+	"github.com/micnncim/kleat-format/pkg/version"
 )
 
 func main() {
@@ -21,17 +23,26 @@ func main() {
 }
 
 type options struct {
-	write bool
-	check bool
+	write   bool
+	check   bool
+	version bool
 }
 
 func newCommand() *cobra.Command {
 	opt := &options{}
 
 	cmd := &cobra.Command{
-		Use:  "kleat-format PATH_TO_HALCONFIG",
-		Args: cobra.ExactArgs(1),
+		Use: "kleat-format PATH_TO_HALCONFIG",
 		Run: func(cmd *cobra.Command, args []string) {
+			if opt.version {
+				fmt.Printf("%s (%s)\n", version.Version, version.Revision)
+				return
+			}
+
+			if len(args) == 0 {
+				log.Fatal("accepts 1 arg(s), received 0")
+			}
+
 			halPath := args[0]
 			if err := opt.run(halPath); err != nil {
 				log.Fatal(err)
@@ -41,6 +52,7 @@ func newCommand() *cobra.Command {
 
 	cmd.Flags().BoolVarP(&opt.write, "write", "w", false, "If true, write result to source halconfig instead of stdout")
 	cmd.Flags().BoolVar(&opt.check, "check", false, "If true, only check whether there is diff between source halconfig and formatted one")
+	cmd.Flags().BoolVar(&opt.version, "version", false, "If true, print version information")
 
 	return cmd
 }
