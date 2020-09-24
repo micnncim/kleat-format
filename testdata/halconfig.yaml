@@ -1,0 +1,7 @@
+providers:
+  kubernetes:
+    enabled: true
+    accounts:
+      - name: k8s
+        kubeconfigFile: /var/secrets/k8s-kubeconfig
+    primaryAccount: k8s
