@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"os"
 
 	"github.com/spf13/cobra"
 	"github.com/spinnaker/kleat/api/client/config"
@@ -25,6 +26,7 @@ func main() {
 type options struct {
 	write   bool
 	check   bool
+	quiet   bool
 	version bool
 }
 
@@ -45,13 +47,17 @@ func newCommand() *cobra.Command {
 
 			halPath := args[0]
 			if err := opt.run(halPath); err != nil {
-				log.Fatal(err)
+				if !opt.quiet {
+					log.Println(err)
+				}
+				os.Exit(1)
 			}
 		},
 	}
 
 	cmd.Flags().BoolVarP(&opt.write, "write", "w", false, "If true, write result to source halconfig instead of stdout")
 	cmd.Flags().BoolVar(&opt.check, "check", false, "If true, only check whether there is diff between source halconfig and formatted one")
+	cmd.Flags().BoolVarP(&opt.quiet, "quiet", "q", false, "If true, suppress printing logs")
 	cmd.Flags().BoolVar(&opt.version, "version", false, "If true, print version information")
 
 	return cmd
@@ -80,7 +86,7 @@ func (o *options) run(halPath string) error {
 		}
 
 	default:
-		fmt.Println(string(data))
+		fmt.Printf(string(data))
 	}
 
 	return nil
