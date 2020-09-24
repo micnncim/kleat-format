@@ -1,0 +1,10 @@
+builds:
+- main: ./cmd/kleat-format/main.go
+  ldflags: 
+    - -s -w
+    - -X github.com/micnncim/kleat-format/pkg/version.Version={{.Tag}}
+    - -X github.com/micnncim/kleat-format/pkg/version.Revision={{.ShortCommit}}
+  goos:
+  - linux
+  - darwin
+  - windows
