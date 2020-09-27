@@ -23,7 +23,7 @@ func main() {
 	}
 }
 
-type options struct {
+type runner struct {
 	write   bool
 	check   bool
 	quiet   bool
@@ -31,12 +31,12 @@ type options struct {
 }
 
 func newCommand() *cobra.Command {
-	opt := &options{}
+	r := &runner{}
 
 	cmd := &cobra.Command{
 		Use: "kleat-format /path/to/halconfig",
 		Run: func(cmd *cobra.Command, args []string) {
-			if opt.version {
+			if r.version {
 				fmt.Printf("%s (%s)\n", version.Version, version.Revision)
 				return
 			}
@@ -46,8 +46,8 @@ func newCommand() *cobra.Command {
 			}
 
 			halPath := args[0]
-			if err := opt.run(halPath); err != nil {
-				if !opt.quiet {
+			if err := r.run(halPath); err != nil {
+				if !r.quiet {
 					log.Println(err)
 				}
 				os.Exit(1)
@@ -55,32 +55,32 @@ func newCommand() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().BoolVarP(&opt.write, "write", "w", false, "If true, write result to source halconfig instead of stdout")
-	cmd.Flags().BoolVar(&opt.check, "check", false, "If true, only check whether there is diff between source halconfig and formatted one")
-	cmd.Flags().BoolVarP(&opt.quiet, "quiet", "q", false, "If true, suppress printing logs")
-	cmd.Flags().BoolVar(&opt.version, "version", false, "If true, print version information")
+	cmd.Flags().BoolVarP(&r.write, "write", "w", false, "If true, write result to source halconfig instead of stdout")
+	cmd.Flags().BoolVar(&r.check, "check", false, "If true, only check whether there is diff between source halconfig and formatted one")
+	cmd.Flags().BoolVarP(&r.quiet, "quiet", "q", false, "If true, suppress printing logs")
+	cmd.Flags().BoolVar(&r.version, "version", false, "If true, print version information")
 
 	return cmd
 }
 
-func (o *options) run(halPath string) error {
+func (r *runner) run(halPath string) error {
 	data, err := ioutil.ReadFile(halPath)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	newData, err := format(data)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	switch {
-	case o.write:
+	case r.write:
 		if err := ioutil.WriteFile(halPath, newData, 0666); err != nil {
 			return err
 		}
 
-	case o.check:
+	case r.check:
 		if string(data) != string(newData) {
 			return fmt.Errorf("%s is not formatted", halPath)
 		}
