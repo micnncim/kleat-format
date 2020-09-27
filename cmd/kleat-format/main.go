@@ -1,10 +1,10 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"log"
-	"os"
 
 	"github.com/spf13/cobra"
 	"github.com/spinnaker/kleat/api/client/config"
@@ -26,7 +26,6 @@ func main() {
 type runner struct {
 	write   bool
 	check   bool
-	quiet   bool
 	version bool
 }
 
@@ -35,35 +34,30 @@ func newCommand() *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use: "kleat-format /path/to/halconfig",
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			if r.version {
 				fmt.Printf("%s (%s)\n", version.Version, version.Revision)
-				return
+				return nil
 			}
 
-			if len(args) == 0 {
-				log.Fatal("accepts 1 arg(s), received 0")
-			}
-
-			halPath := args[0]
-			if err := r.run(halPath); err != nil {
-				if !r.quiet {
-					log.Println(err)
-				}
-				os.Exit(1)
-			}
+			return r.run(args)
 		},
 	}
 
-	cmd.Flags().BoolVarP(&r.write, "write", "w", false, "If true, write result to source halconfig instead of stdout")
-	cmd.Flags().BoolVar(&r.check, "check", false, "If true, only check whether there is diff between source halconfig and formatted one")
-	cmd.Flags().BoolVarP(&r.quiet, "quiet", "q", false, "If true, suppress printing logs")
-	cmd.Flags().BoolVar(&r.version, "version", false, "If true, print version information")
+	cmd.Flags().BoolVarP(&r.write, "write", "w", r.write, "If true, write result to source halconfig instead of stdout")
+	cmd.Flags().BoolVar(&r.check, "check", r.check, "If true, only check whether there is diff between source halconfig and formatted one")
+	cmd.Flags().BoolVar(&r.version, "version", r.version, "If true, print version information")
 
 	return cmd
 }
 
-func (r *runner) run(halPath string) error {
+func (r *runner) run(args []string) error {
+	if len(args) == 0 {
+		return errors.New("accepts 1 arg(s), received 0")
+	}
+
+	halPath := args[0]
+
 	data, err := ioutil.ReadFile(halPath)
 	if err != nil {
 		return err
