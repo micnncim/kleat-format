@@ -27,7 +27,6 @@ Usage:
 Flags:
       --check     If true, only check whether there is diff between source halconfig and formatted one
   -h, --help      help for kleat-format
-  -q, --quiet     If true, suppress printing logs
       --version   If true, print version information
   -w, --write     If true, write result to source halconfig instead of stdout
 
